@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  ecodata:
+    build: .
+    container_name: ecodata
+    restart: unless-stopped
+    ports:
+      - "8580:8580"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PATH=${DB_PATH}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SFTP_HOST=${SFTP_HOST}
+      - SFTP_PORT=${SFTP_PORT}
+      - SFTP_USER=${SFTP_USER}
+      - SFTP_PASSWORD=${SFTP_PASSWORD}
+      - SFTP_REMOTE_DIR=${SFTP_REMOTE_DIR:-/upload}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_TO=${SMTP_TO}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - CODIGO_EMPRESA=${CODIGO_EMPRESA}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8580}
+      - TZ=${TZ:-America/Sao_Paulo}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ecodata_data:/app/data
+      - ecodata_output:/app/output
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8580/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  ecodata_data:
+  ecodata_output:

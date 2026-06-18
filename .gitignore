@@ -1,0 +1,30 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+*.egg-info/
+
+output/
+backups/
+data/
+logs/
+
+# Build artifacts
+build/
+dist/
+server/static/
+
+# Logs
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/tsconfig.tsbuildinfo
+
+# Caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.opencode/
