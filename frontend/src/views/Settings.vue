@@ -101,6 +101,7 @@
 import { ref, onMounted, reactive } from "vue";
 import Layout from "@/components/Layout.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import { apiGet, apiPost, apiPut } from "@/composables/useApi";
 
 const loading = ref(true);
 const salvando = ref(false);
@@ -125,7 +126,7 @@ const form = reactive({
 
 async function carregar() {
   try {
-    const data = await fetch("/api/config/env").then(r => r.json());
+    const data = await apiGet("/api/config/env");
     Object.assign(form, data);
   } catch {
     mensagem.value = "Erro ao carregar configurações";
@@ -139,21 +140,11 @@ async function salvar() {
   salvando.value = true;
   mensagem.value = "";
   try {
-    const resp = await fetch("/api/config/env", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await resp.json();
-    if (resp.ok) {
-      mensagem.value = "Configurações salvas com sucesso! Reinicie o servidor para aplicar.";
-      mensagemTipo.value = "sucesso";
-    } else {
-      mensagem.value = data.detail || "Erro ao salvar";
-      mensagemTipo.value = "erro";
-    }
-  } catch {
-    mensagem.value = "Erro ao conectar com o servidor";
+    await apiPut("/api/config/env", form);
+    mensagem.value = "Configurações salvas com sucesso! Reinicie o servidor para aplicar.";
+    mensagemTipo.value = "sucesso";
+  } catch (e: any) {
+    mensagem.value = e.message || "Erro ao salvar";
     mensagemTipo.value = "erro";
   } finally {
     salvando.value = false;
@@ -164,17 +155,12 @@ async function testarConexao() {
   testando.value = true;
   mensagem.value = "";
   try {
-    const resp = await fetch("/api/config/test-db", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        host: form.DB_HOST,
-        path: form.DB_PATH,
-        user: form.DB_USER,
-        password: form.DB_PASSWORD,
-      }),
+    const data = await apiPost("/api/config/test-db", {
+      host: form.DB_HOST,
+      path: form.DB_PATH,
+      user: form.DB_USER,
+      password: form.DB_PASSWORD,
     });
-    const data = await resp.json();
     mensagem.value = data.status === "ok" ? "Conexão OK!" : "Falha: " + (data.error || "Erro desconhecido");
     mensagemTipo.value = data.status === "ok" ? "sucesso" : "erro";
   } catch {
@@ -189,17 +175,12 @@ async function testarSFTP() {
   testandoSFTP.value = true;
   mensagem.value = "";
   try {
-    const resp = await fetch("/api/config/test-sftp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        host: form.SFTP_HOST,
-        port: parseInt(form.SFTP_PORT) || 2222,
-        user: form.SFTP_USER,
-        password: form.SFTP_PASSWORD,
-      }),
+    const data = await apiPost("/api/config/test-sftp", {
+      host: form.SFTP_HOST,
+      port: parseInt(form.SFTP_PORT) || 2222,
+      user: form.SFTP_USER,
+      password: form.SFTP_PASSWORD,
     });
-    const data = await resp.json();
     mensagem.value = data.status === "ok" ? "SFTP OK!" : "Falha: " + (data.error || "Erro desconhecido");
     mensagemTipo.value = data.status === "ok" ? "sucesso" : "erro";
   } catch {

@@ -19,6 +19,7 @@ from server.api.auditoria import router as auditoria_router
 from server.api.auth import router as auth_router, get_current_user
 from server.api.backup_api import router as backup_router
 from server.api.config import router as config_router
+from server.api.test_conn import router as test_conn_router
 from server.api.debug_api import router as debug_router
 from server.api.files import router as files_router
 from server.api.health import router as health_router
@@ -194,6 +195,7 @@ app.include_router(logs_router, dependencies=[Depends(get_current_user)])
 app.include_router(debug_router, dependencies=[Depends(get_current_user)])
 app.include_router(files_router, dependencies=[Depends(get_current_user)])
 app.include_router(backup_router, dependencies=[Depends(get_current_user)])
+app.include_router(test_conn_router)
 app.include_router(config_router, dependencies=[Depends(get_current_user)])
 
 class NoCacheStaticFiles(StaticFiles):
