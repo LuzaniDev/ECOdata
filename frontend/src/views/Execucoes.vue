@@ -49,9 +49,9 @@
                 <span :class="statusClass(e.status)">{{ statusLabel(e.status) }}</span>
               </td>
               <td class="p-3 text-xs font-mono truncate max-w-40">
-                <a v-if="e.file_path" :href="'/api/files/download/' + e.file_path.split('\\').pop()" class="text-primary-600 hover:underline" title="Download">
+                <button v-if="e.file_path" @click="baixarArquivo(e.file_path.split('\\').pop())" class="text-primary-600 hover:underline text-left" title="Download">
                   {{ e.file_path.split('\\').pop() }}
-                </a>
+                </button>
                 <span v-else class="text-gray-400">-</span>
               </td>
               <td class="p-3 text-xs text-gray-500">{{ formatDate(e.started_at) }}</td>
@@ -88,7 +88,7 @@
             <div><span class="text-gray-500">Fim:</span> {{ formatDate(detalhes.item.finished_at) }}</div>
             <div class="col-span-2" v-if="detalhes.item.file_path">
               <span class="text-gray-500">Arquivo:</span>
-              <a :href="'/api/files/download/' + detalhes.item.file_path.split('\\').pop()" class="text-primary-600 hover:underline text-xs font-mono ml-1">{{ detalhes.item.file_path.split('\\').pop() }}</a>
+              <button @click="baixarArquivo(detalhes.item.file_path.split('\\').pop())" class="text-primary-600 hover:underline text-xs font-mono ml-1 text-left">{{ detalhes.item.file_path.split('\\').pop() }}</button>
             </div>
             <div class="col-span-2" v-if="detalhes.item.file_size">
               <span class="text-gray-500">Tamanho:</span> {{ formatBytes(detalhes.item.file_size) }}
@@ -140,7 +140,7 @@
 import { ref, onMounted, computed } from "vue";
 import Layout from "@/components/Layout.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import { apiGet, apiPost } from "@/composables/useApi";
+import { apiGet, apiPost, downloadFile } from "@/composables/useApi";
 import { useToast } from "@/composables/useToast";
 
 const { success, error: showError } = useToast();
@@ -232,6 +232,14 @@ async function executarComEmpresa(codigo: string) {
     showError(e?.message || "Erro ao executar");
   } finally {
     executandoEmpresa.value = "";
+  }
+}
+
+async function baixarArquivo(name: string) {
+  try {
+    await downloadFile(`/api/files/download/${name}`, name);
+  } catch (e: any) {
+    showError("Erro ao baixar arquivo");
   }
 }
 

@@ -123,9 +123,11 @@ class EstoqueGenerator(BaseGenerator):
             if qtde_emb <= 0:
                 qtde_emb = 1
 
-            estoque_fisico = float(est_disponivel) / qtde_emb if est_disponivel else 0
+            estoque_fisico = int(float(est_disponivel) / qtde_emb) if est_disponivel else 0
+            if estoque_fisico < 0:
+                estoque_fisico = 0
             estoque_transito = float(est_transito) if est_transito else 0
-            estoque_reservado = float(est_reservado) if est_reservado else 0
+            estoque_reservado = int(est_reservado) if est_reservado else 0
 
             linha = [
                 format_text(cnpj_filial, 14),
@@ -141,11 +143,11 @@ class EstoqueGenerator(BaseGenerator):
                 format_int(qtde_emb),
                 format_decimal_br(preco_tabela),
                 format_decimal_br(preco_custo),
-                format_decimal_br(estoque_fisico),
+                format_int(estoque_fisico),
                 format_decimal_br(estoque_transito),
                 "0,00",
                 "0,00",
-                format_decimal_br(estoque_reservado),
+                format_int(estoque_reservado),
             ]
             linhas.append(linha)
 

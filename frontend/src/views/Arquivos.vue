@@ -32,10 +32,10 @@
                   <td class="p-3 text-xs text-gray-500">{{ formatBytes(f.size) }}</td>
                   <td class="p-3 text-xs text-gray-500">{{ formatDate(f.modified) }}</td>
                   <td class="p-3 flex gap-1">
-                    <a :href="'/api/files/download/' + f.name" class="btn-primary text-xs py-1 px-2 inline-flex items-center gap-1" download>
+                    <button @click="baixarArquivo(f.name)" class="btn-primary text-xs py-1 px-2 inline-flex items-center gap-1">
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                       Download
-                    </a>
+                    </button>
                     <button @click="visualizarArquivo(f.name)" class="btn-secondary text-xs py-1 px-2 inline-flex items-center gap-1">
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                       Visualizar
@@ -74,7 +74,7 @@ import { ref, onMounted } from "vue";
 import Layout from "@/components/Layout.vue";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
 import SpreadsheetEditor from "@/components/SpreadsheetEditor.vue";
-import { apiGet } from "@/composables/useApi";
+import { apiGet, downloadFile } from "@/composables/useApi";
 
 const loading = ref(true);
 const files = ref<any[]>([]);
@@ -105,6 +105,14 @@ function editarArquivo(name: string) {
 
 function onSaved() {
   load();
+}
+
+async function baixarArquivo(name: string) {
+  try {
+    await downloadFile(`/api/files/download/${name}`, name);
+  } catch (e: any) {
+    console.error("Erro ao baixar:", e);
+  }
 }
 
 async function load() {

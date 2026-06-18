@@ -155,7 +155,7 @@ async function testarConexao() {
   testando.value = true;
   mensagem.value = "";
   try {
-    const data = await apiPost("/api/config/test-db", {
+    const data: any = await apiPost("/api/config/test-db", {
       host: form.DB_HOST,
       path: form.DB_PATH,
       user: form.DB_USER,
@@ -175,7 +175,7 @@ async function testarSFTP() {
   testandoSFTP.value = true;
   mensagem.value = "";
   try {
-    const data = await apiPost("/api/config/test-sftp", {
+    const data: any = await apiPost("/api/config/test-sftp", {
       host: form.SFTP_HOST,
       port: parseInt(form.SFTP_PORT) || 2222,
       user: form.SFTP_USER,

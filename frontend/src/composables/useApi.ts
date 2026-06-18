@@ -81,3 +81,25 @@ export function apiPut<T>(path: string, body?: unknown) {
 export function apiDelete<T>(path: string, params?: Record<string, unknown>) {
   return api<T>(path, { method: "DELETE", params: params as Record<string, string | number | boolean | undefined | null> });
 }
+
+export async function downloadFile(path: string, filename?: string) {
+  const key = await loadApiKey();
+  const headers: Record<string, string> = {};
+  if (key) {
+    headers["Authorization"] = `Bearer ${key}`;
+  }
+  const resp = await fetch(`${BASE}${path}`, { headers });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+    throw new Error(err.detail || `Erro ${resp.status}`);
+  }
+  const blob = await resp.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename || path.split("/").pop() || "download";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

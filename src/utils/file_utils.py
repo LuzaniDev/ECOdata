@@ -7,7 +7,7 @@ def format_decimal_br(valor) -> str:
         return "0,00"
     try:
         v = float(valor)
-        return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        return f"{v:.2f}".replace(".", ",")
     except (ValueError, TypeError):
         return "0,00"
 
